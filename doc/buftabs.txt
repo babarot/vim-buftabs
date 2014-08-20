@@ -1,0 +1,256 @@
+*buftabs.txt*             A plugin for buffer like the tabpages in statusline
+
+                                                                    *buftabs*
+                  __          ______        __        
+                 / /_  __  __/ __/ /_____ _/ /_  _____
+                / __ \/ / / / /_/ __/ __ `/ __ \/ ___/
+               / /_/ / /_/ / __/ /_/ /_/ / /_/ (__  ) 
+              /_.___/\__,_/_/  \__/\__,_/_.___/____/  
+
+Author:      b4b4r07 <b4b4r07 AT gmail DOT com>
+Version:     1.1
+Last Change: 20 Aug 2014
+
+==============================================================================
+CONTENTS                                                    *buftabs-contents*
+
+  1. Introduction............................. |buftabs-introduction|
+  2. Commands................................. |buftabs-commands|
+  3. Options.................................. |buftabs-options|
+  4. Mappings................................. |buftabs-mappings|
+  5. About.................................... |buftabs-about|
+  6. Changelog................................ |buftabs-changelog|
+  7. License.................................. |buftabs-license|
+
+==============================================================================
+1. INTRODUCTION                                         *buftabs-introduction*
+
+  This is a simple script that shows a tabs-like list of buffers in the bottom
+  of the window. The biggest advantage of this script over various others is
+  that it does not take any lines away from your terminal, leaving more space
+  for the document you're editing. The tabs are only visible when you need
+  them - when you are switchin between buffers.
+
+Features:~
+  * Can manage the some buffers at a statusline.
+  * Do NOT need some commands to display buffers such as |:ls| and |:buffers|.
+  * Can display a full path.
+  * Highlight support active or inactive buffers.
+
+==============================================================================
+2. COMMANDS                                                 *buftabs-commands*
+
+------------------------------------------------------------------------------
+:BuftabsToggle                                                *:BuftabsToggle*
+
+  Toggles the buftabs on and off.
+
+------------------------------------------------------------------------------
+:BuftabsEnable                                                *:BuftabsEnable*
+
+  Enables the buftabs for the current buffer and any other buffer upon
+  entering it.
+
+------------------------------------------------------------------------------
+:BuftabsDisable                                              *:BuftabsDisable*
+
+  Disables the buftabs for the current buffer and any other buffer upon
+  entering it.
+
+==============================================================================
+3. OPTIONS                                                   *buftabs-options*
+
+------------------------------------------------------------------------------
+g:buftabs_enabled                                          *g:buftabs_enabled*
+
+Use this option to control whether or not the plugin automatically execute
+|buftabs| when being |VimEnter|.
+
+Default: 1. Values: 0 or 1.
+>
+  let g:buftabs_enabled = 1
+<
+
+If you set this option to 0, your statusline does not change anything.
+
+------------------------------------------------------------------------------
+g:buftabs_in_statusline                              *g:buftabs_in_statusline*
+
+Define this variable to make the plugin show the buftabs in the statusline
+instead of the cmdline. It is a good idea to configure vim to show the
+statusline as well when only one window is open.
+
+Default: 1. Values: 0 or 1.
+>
+  let g:buftabs_in_statusline = 1
+<
+
+If you set this option to 1, left side is replaced by the buftabs from |%=| in
+the statusline.
+NOTE: You must be described in your vimrc the following settings:
+>
+  set laststatus=2
+<
+
+------------------------------------------------------------------------------
+g:buftabs_in_cmdline                                    *g:buftabs_in_cmdline*
+
+Echo buftabs to cmdline instead of the statusline.
+
+Default: 0. Values: 0 or 1.
+>
+  let g:buftabs_in_cmdline = 0
+<
+
+DANGER:~
+If you set |g:buftabs_in_cmdline| and |g:buftabs_in_statusline| to 0, then it is
+equal to the set |g:buftabs_enabled| to 0. However, |g:buftabs_enabled| is not
+set to 0 actually.
+
+------------------------------------------------------------------------------
+g:buftabs_only_basename                              *g:buftabs_only_basename*
+
+Default: 1. Values: 0 or 1.
+
+Define this variable to make buftabs only print the filename of each buffer,
+omitting the preceding directory name.
+>
+  let g:buftabs_only_basename = 1
+<
+
+------------------------------------------------------------------------------
+g:buftabs_active_highlight_group            *g:buftabs_active_highlight_group*
+g:buftabs_inactive_highlight_group        *g:buftabs_inactive_highlight_group*
+
+Default: "". Values: String.
+
+The name of a highlight group (:help highligh-groups) which is used to
+show the name of the current active buffer and of all other inactive
+buffers. If these variables are not defined, no highlighting is used.
+(Highlighting is only functional when |g:buftabs_in_statusline| is enabled)
+>
+  let g:buftabs_active_highlight_group = "Visual"
+  let g:buftabs_inactive_highlight_group = "Comment"
+<
+
+------------------------------------------------------------------------------
+g:buftabs_statusline_highlight_group    *g:buftabs_statusline_highlight_group*
+
+Default: "". Values: String.
+
+Colorize the statusline of the part which |buftabs| does not use.
+>
+  highlight BlackWhite ctermfg=black ctermbg=white cterm=none
+  let g:buftabs_statusline_highlight_group = "BlackWhite"
+<
+
+------------------------------------------------------------------------------
+g:buftabs_marker_start                                *g:buftabs_marker_start*
+
+Default: "[". Values: String.
+
+Example:~
+[4-buftabs.txt!] 5-buftabs.vim           [help][utf-8:unix] 154/333L,69C,46%
+
+------------------------------------------------------------------------------
+g:buftabs_marker_end                                    *g:buftabs_marker_end*
+Default: "]". Values: String.
+
+Example:~
+[4-buftabs.txt!] 5-buftabs.vim           [help][utf-8:unix] 154/333L,69C,46%
+
+------------------------------------------------------------------------------
+g:buftabs_separator                                      *g:buftabs_separator*
+Default: "-". Values: String.
+
+These strings are drawn around each tab as separators,
+show {buffer-number}|g:buftabs_separator|{buffer-name} in statusline.
+
+Example:~
+[4-buftabs.txt!] 5-buftabs.vim           [help][utf-8:unix] 154/333L,69C,46%
+
+------------------------------------------------------------------------------
+g:buftabs_marker_modified                          *g:buftabs_marker_modified*
+Default: "!". Values: String.
+
+The |g:buftabs_marker_modified| symbol is used to denote a modified (unsaved)
+buffer.
+
+Example:~
+[4-buftabs.txt!] 5-buftabs.vim           [help][utf-8:unix] 154/333L,69C,46%
+
+==============================================================================
+4. MAPPINGS                                                 *buftabs-mappings*
+
+This script draws buffer tabs on vim startup, when a new buffer is created
+and when switching between buffers.
+
+It might be handy to create a few maps for easy switching of buffers in your
+vimrc file. For example, using F1 and F2 keys:
+>
+  :noremap <f1> :bprev<CR> 
+  :noremap <f2> :bnext<CR>
+<
+
+or using control-left and control-right keys:
+>
+  :noremap <C-left> :bprev<CR>
+  :noremap <C-right> :bnext<CR>
+<
+
+By the following settings, the users can more easily select enabling and
+disabling the function of |buftabs|.
+>
+  :nnoremap <silent> <Leader>bt :BuftabsToggle<CR>
+  :nnoremap <silent> <Leader>be :BuftabsEnable<CR>
+  :nnoremap <silent> <Leader>bd :BuftabsDisable<CR>
+<
+
+==============================================================================
+5. ABOUT                                                       *buftabs-about*
+
+Why did I build this plugin?~
+  * Made modifications in myself preference.
+  * I wanted to learn me some VimL.
+
+Links:~
+  * Github: https://github.com/b4b4r07/vim-buftabs
+
+Credits:~
+  * Based on https://github.com/vim-scripts/buftabs.
+
+Contact:~
+  * Twitter: @b4b4r07
+  * Email:   <b4b4r07 AT gmail DOT com>
+
+Bug reports, feedback, suggestions etc are welcomed.
+
+==============================================================================
+6. CHANGELOG                                               *buftabs-changelog*
+
+1.1~
+  * Add help file to doc/buftabs.txt.
+  * Add many useful variables as |g:options|.
+
+1.0~
+  * First public version.
+  * Forked from https://github.com/vim-scripts/buftabs.
+
+==============================================================================
+7. LICENSE                                                   *buftabs-license*
+
+The GNU General Public License~
+
+buftabs (C) 2014 b4b4r07
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the Free
+Software Foundation; either version 2 of the License, or (at your option)
+any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+more details.
+
+vim:tw=78:et:ts=2:sw=2:sts=2:ft=help:norl:
