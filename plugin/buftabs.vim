@@ -17,41 +17,36 @@ set cpo&vim
 " Some variables {{{
 let s:original_left_statusline = matchstr(&statusline, "%=.*")
 let s:original_statusline      = &statusline
-let g:buftabs_enabled         = get(g:, 'buftabs_enabled',          1)
-let g:buftabs_in_statusline   = get(g:, 'buftabs_in_statusline',    1)
-let g:buftabs_in_cmdline      = get(g:, 'buftabs_in_cmdline',       0)
-let g:buftabs_only_basename   = get(g:, 'buftabs_only_basename',    1)
-let g:buftabs_marker_start    = get(g:, 'buftabs_marker_start',    '[')
-let g:buftabs_marker_end      = get(g:, 'buftabs_marker_end',      ']')
-let g:buftabs_marker_modified = get(g:, 'buftabs_marker_modified', '+')
-let g:buftabs_separator       = get(g:, 'buftabs_separator',       '#')
+let g:buftabs_enabled          = get(g:, 'buftabs_enabled',          1)
+let g:buftabs_in_statusline    = get(g:, 'buftabs_in_statusline',    1)
+let g:buftabs_only_basename    = get(g:, 'buftabs_only_basename',    1)
+let g:buftabs_marker_start     = get(g:, 'buftabs_marker_start',    '[')
+let g:buftabs_marker_end       = get(g:, 'buftabs_marker_end',      ']')
+let g:buftabs_marker_modified  = get(g:, 'buftabs_marker_modified', '+')
+let g:buftabs_separator        = get(g:, 'buftabs_separator',       '#')
 let g:buftabs_active_highlight_group     = get(g:, 'buftabs_active_highlight_group', 'Visual')
 let g:buftabs_inactive_highlight_group   = get(g:, 'buftabs_inactive_highlight_group',     '')
 let g:buftabs_statusline_highlight_group = get(g:, 'buftabs_statusline_highlight_group',   '')
 "}}}
 " Toggle buftabs {{{
 function! s:buftabs_toggle(...)
-  if a:0 && a:1 == 1
-    let g:buftabs_enabled = 1
+  " Enable or Disable
+  if a:0 == 1
+    let g:buftabs_enabled = a:1 ? 1 : 0
   endif
-  if a:0 && a:1 == 0
-    let g:buftabs_enabled = 0
-  endif
-
+  " Toggle enable and disable
   if a:0 == 0
-    if g:buftabs_enabled == 1
-      let g:buftabs_enabled = 0
-    elseif g:buftabs_enabled == 0
-      let g:buftabs_enabled = 1
-    endif
+    let g:buftabs_enabled = g:buftabs_enabled ? 0 : 1
   endif
-
-  call s:buftabs_show(-1)
+  call s:buftabs()
 endfunction
 "}}}
-" Draw the buftabs {{{
-function! s:buftabs_show(deleted_buf)
-  " Show original statusline
+" Buftabs {{{
+function! s:buftabs()
+  if g:buftabs_enabled == 1
+    call s:buftabs_show(-1)
+  endif
+
   if g:buftabs_enabled == 0
     for buf in range(1, bufnr('$'))
       if bufexists(buf) && buflisted(buf)
@@ -59,9 +54,14 @@ function! s:buftabs_show(deleted_buf)
         bprev
       endif
     endfor
+  endif
+endfunction "}}}
+" Draw the buftabs {{{
+function! s:buftabs_show(deleted_buf)
+  if g:buftabs_enabled == 0
     return
   endif
-
+  " Show original statusline
   let i = 1
   let s:list = ''
   let start = 0
@@ -72,7 +72,6 @@ function! s:buftabs_show(deleted_buf)
   while(i <= bufnr('$'))
     " Only show buffers in the list, and omit help screens
     if buflisted(i) && getbufvar(i, "&modifiable") && a:deleted_buf != i
-
       " Get the name of the current buffer, and escape characters that might
       " mess up the statusline
       if g:buftabs_only_basename
@@ -157,6 +156,7 @@ function! s:buftabs_show(deleted_buf)
   " is displayed in the command line (volatile) or in the statusline
   " (persistent)
   if exists("g:buftabs_in_statusline") && g:buftabs_in_statusline
+    "if match(&statusline, "%{buftabs#statusline()}") == -1
     if match(&statusline, s:list) == -1
       if exists("g:buftabs_statusline_highlight_group")
         let s:original_left_statusline = '%=' . '%#' . g:buftabs_statusline_highlight_group . '#' . 
@@ -165,9 +165,10 @@ function! s:buftabs_show(deleted_buf)
       let &statusline = s:list . s:original_left_statusline
     end
   end
+
 endfunction
 "}}}
-
+" Interface {{{
 command! -nargs=0 BuftabsToggle  call s:buftabs_toggle()
 command! -nargs=0 BuftabsEnable  call s:buftabs_toggle(1)
 command! -nargs=0 BuftabsDisable call s:buftabs_toggle(0)
@@ -177,7 +178,8 @@ autocmd VimEnter,BufNew,BufEnter,BufWritePost * call s:buftabs_show(-1)
 autocmd BufDelete * call s:buftabs_show(expand('<abuf>'))
 if version >= 700
   autocmd InsertLeave,VimResized * call s:buftabs_show(-1)
-end
+endif
+"}}}
 
 " Restore 'cpoptions' {{{
 let &cpo = s:save_cpo
