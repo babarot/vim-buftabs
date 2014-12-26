@@ -80,6 +80,7 @@ function! s:buftabs_show(deleted_buf)
         let name = bufname(i)
       endif
       let name = substitute(name, "%", "%%", "g")
+      let name = substitute(name, "-", "\x03", "g")
 
       " Append the current buffer number and name to the list. If the buffer
       " is the active buffer, enclose it in some magick characters which will
@@ -162,7 +163,8 @@ function! s:buftabs_show(deleted_buf)
         let s:original_left_statusline = '%=' . '%#' . g:buftabs_statusline_highlight_group . '#' . 
               \ substitute(substitute(s:original_left_statusline, '^%=', '', ''), '%#.*#', '', '')
       endif
-      let &statusline = s:list . s:original_left_statusline
+      "let &statusline = s:list . s:original_left_statusline
+      let &statusline = substitute(s:list, "\x03", "-", 'g') . s:original_left_statusline
     end
   end
 
